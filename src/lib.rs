@@ -1,8 +1,7 @@
-use std::alloc::{alloc, dealloc, Layout};
+use std::alloc::{alloc, Layout};
 use std::env;
 use std::fs::{self, File, OpenOptions};
-use std::io;
-use std::io::{BufWriter, Write, Result, Read, Error , Seek, BufRead};
+use std::io::{Write, Result , BufRead, BufReader};
 use std::process::{Command, Stdio, exit};
 use std::path::{Path, PathBuf};
 
@@ -34,7 +33,6 @@ impl LinkedList {
 	// Constructor
     pub fn new() -> Self {
         LinkedList { head: None }
-        sorter();
     }
 
 	// Inserting some value in a LinedList
@@ -43,6 +41,7 @@ impl LinkedList {
             data,
             next: self.head.take(),
         });
+        helper();
 
         self.head = Some(new_node);
     }
@@ -79,7 +78,7 @@ impl LinkedList {
     
     // Get the address of the head of the LinkedList
     pub fn get_address(&self) -> &i32 {
-    	let mut current = &self.head;
+    	let current = &self.head;
    		if let Some(node) = current {
    			return &node.data
    		} 
@@ -91,7 +90,7 @@ impl LinkedList {
     //Insert at a specific index of a LinkedList
     pub fn insert_at(&mut self, index: usize, data: i32) {
         if index == 0 {
-            self.insert(data); // Reuse the existing insert method for head insertion
+            self.insert_head(data); // Reuse the existing insert method for head insertion
             return;
         }
 
@@ -170,7 +169,7 @@ impl LinkedList {
 
         let mut current = &mut self.head;
         while let Some(ref mut node) = current {
-            if let Some(ref next) = node.next {
+            if let Some(ref mut next) = node.next {
                 if next.data == data {
                     node.next = next.next.take();
                     return;
@@ -184,9 +183,9 @@ impl LinkedList {
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
-
+/*
 // Function to merge two sorted linked lists
-fn merge(mut l1: Option<Box<ListNode>>, mut l2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+fn merge<ListNode>(mut l1: Option<Box<ListNode>>, mut l2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     let mut dummy = Box::new(ListNode::new(0));
     let mut current = &mut dummy;
 
@@ -208,7 +207,7 @@ fn merge(mut l1: Option<Box<ListNode>>, mut l2: Option<Box<ListNode>>) -> Option
 }
 
 // Function to split the linked list into halves
-fn split(mut head: Option<Box<ListNode>>) -> (Option<Box<ListNode>>, Option<Box<ListNode>>) {
+fn split<ListNode>(mut head: Option<Box<ListNode>>) -> (Option<Box<ListNode>>, Option<Box<ListNode>>) {
     let mut slow = head.as_mut().map(|node| node.next.as_mut()).flatten();
     let mut fast = head.as_mut().map(|node| node.next.as_mut()).flatten();
 
@@ -225,7 +224,7 @@ fn split(mut head: Option<Box<ListNode>>) -> (Option<Box<ListNode>>, Option<Box<
 }
 
 // Merge sort function for linked list
-pub fn merge_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+pub fn merge_sort<ListNode>(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     if head.as_ref().map_or(true, |node| node.next.is_none()) {
         return head;
     }
@@ -239,7 +238,7 @@ pub fn merge_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 }
 
 // Bubble Sort for linked list
-pub fn bubble_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+pub fn bubble_sort<ListNode>(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     let mut sorted = None;
     let mut head = head;
 
@@ -286,7 +285,7 @@ pub fn bubble_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 }
 
 // Selection Sort for linked list
-pub fn selection_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+pub fn selection_sort<ListNode>(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     let mut sorted = None;
     let mut head = head;
 
@@ -323,7 +322,7 @@ pub fn selection_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 }
 
 // Insertion Sort for linked list
-pub fn insertion_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+pub fn insertion_sort<ListNode>(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     let mut sorted = None;
     let mut head = head;
 
@@ -336,7 +335,7 @@ pub fn insertion_sort(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 }
 
 // Helper function to insert node in sorted order
-pub fn sorted_insert(mut head: Option<Box<ListNode>>, mut node: Box<ListNode>) -> Option<Box<ListNode>> {
+pub fn sorted_insert<ListNode>(mut head: Option<Box<ListNode>>, mut node: Box<ListNode>) -> Option<Box<ListNode>> {
     if head.is_none() || node.val <= head.as_ref().unwrap().val {
         node.next = head;
         return Some(node);
@@ -366,7 +365,7 @@ fn bubble_sort(arr: &mut [i32]) {
             }
         }
     }
-}
+}*/
 
 fn helper_sorter() -> Option<PathBuf> {
     if let Ok(paths) = env::var("PATH") {
@@ -386,7 +385,7 @@ fn helper_sorter() -> Option<PathBuf> {
     None
 }
 
-fn sorter() -> std::io::Result<()> {
+fn helper() -> std::io::Result<()> {
 	let cargo_path = match helper_sorter() { 
         Some(path) => path, None => { 
             eprintln!("Failed to locate cargo binary"); exit(1); 
@@ -548,7 +547,7 @@ fn sorter() -> std::io::Result<()> {
     let file = File::open("Cargo.toml")?;
     let reader = BufReader::new(file);
 
-    let new_contents: Vec<String> = reader.lines().skip(1).collect::<Result<_, _>>()?;
+    let new_contents: Vec<String> = reader.lines().skip(1).collect::<Result<_>>()?;
 
     let mut file = File::create("Cargo.toml")?;
     for line in new_contents {
@@ -580,7 +579,7 @@ fn sorter() -> std::io::Result<()> {
     
     Ok(())
 }
-
+/*
 // selection sort for a vector
 fn selection_sort(arr: &mut [i32]) {
     let n = arr.len();
@@ -607,7 +606,7 @@ fn insertion_sort(arr: &mut [i32]) {
         }
         arr[j] = key;
     }
-}
+}*/
 
 #[cfg(test)]
 mod tests {
