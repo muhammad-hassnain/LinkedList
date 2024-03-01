@@ -41,7 +41,7 @@ impl LinkedList {
             data,
             next: self.head.take(),
         });
-        helper();
+        let _ = helper();
 
         self.head = Some(new_node);
     }
