@@ -106,7 +106,15 @@ Searches for and removes the first node that contains the specified data.
 
 ## Example Usage
 
+- You have to add LinkedList to your Cargo.toml as 
+'''rust
+LinkedList = {git = "https://github.com/muhammad-hassnain/LinkedList.git"}
+
+
 ```rust
+
+use LinkedList::LinkedList;
+
 let mut list = LinkedList::new();
 list.insert_head(1);
 list.insert_tail(3);
