@@ -1,88 +1,117 @@
-# helper
-A helper library containing a LinkedLIst Implementation, various sort functions and other helper functions for help in various programming tasks. 
+# LinkedList Implementation in Rust
 
-# Rust LinkedList Implementation
+This repository contains an implementation of a singly linked list in Rust. The linked list supports fundamental operations such as insertion, deletion, and traversal, offering a practical example of Rust's ownership and type safety features.
 
-This repository contains a Rust implementation of a singly linked list, providing basic operations such as insertion at various positions, deletion, and traversal. The implementation is designed to help understand the inner workings of linked lists in a systems programming context using Rust's ownership and type safety features.
+## Overview
 
-## Features
-
-- Insert elements at the head, tail, or any arbitrary position in the list.
-- Remove elements from the head, tail, or remove a specific value from the list.
-- Traverse the list to print all elements or display the address of each node.
-- Get the length of the list or the address of the head node's data.
+The implementation includes two main structures: `Node` and `LinkedList`. The `Node` struct represents an individual element in the list, holding its data and a pointer to the next node. The `LinkedList` struct provides the functionality to manage the list, including methods to insert, remove, and display nodes.
 
 ## Structs
 
 ### Node
 
-A single node of the linked list containing:
-- `data: i32` - The integer data stored in the node.
-- `next: Option<Box<Node>>` - A pointer to the next node in the list (if any).
+- **Fields:**
+  - `data: i32`: Stores the integer data of the node.
+  - `next: Option<Box<Node>>`: Points to the next node in the list, if any.
 
 ### LinkedList
 
-The linked list itself, which maintains:
-- `head: Option<Box<Node>>` - A pointer to the first node in the list (if any).
+- **Fields:**
+  - `head: Option<Box<Node>>`: Points to the first node in the list, if the list is not empty.
 
 ## Methods
 
-### LinkedList::new() -> Self
+### `LinkedList::new() -> Self`
 
 Constructs a new, empty `LinkedList`.
 
-### insert_head(&mut self, data: i32)
+- **Input:** None
+- **Output:** An instance of `LinkedList`.
+
+### `LinkedList::insert_head(data: i32)`
 
 Inserts a new node with the provided data at the beginning of the list.
 
-### display_address(&self)
+- **Input:** `data: i32` - The data to be inserted.
+- **Output:** None. Modifies the list in-place.
 
-Displays the memory address of each node in the list.
+### `LinkedList::display_address()`
 
-### display(&self)
+Displays the memory address of each node in the list. This method is useful for debugging and understanding how Rust handles memory with `Box`.
 
-Prints all the elements of the linked list.
+- **Input:** None
+- **Output:** None. Prints the address of each node's data to the console.
 
-### get_length(&self) -> i32
+### `LinkedList::display()`
 
-Returns the length of the linked list.
+Prints all the elements of the linked list in order from head to tail.
 
-### get_address(&self) -> &i32
+- **Input:** None
+- **Output:** None. Prints the data of each node to the console, followed by a newline.
 
-Gets the address of the head node's data.
+### `LinkedList::get_length() -> i32`
 
-### insert_at(&mut self, index: usize, data: i32)
+Calculates and returns the length of the linked list, i.e., the total number of nodes.
 
-Inserts a new node with the provided data at the specified index.
+- **Input:** None
+- **Output:** `i32` - The number of elements in the list.
 
-### insert_tail(&mut self, data: i32)
+### `LinkedList::get_address() -> &i32`
 
-Inserts a new node with the provided data at the end of the list.
+Gets the address of the head node's data. This method can be used to verify the internal structure or for debugging purposes.
 
-### remove_head(&mut self)
+- **Input:** None
+- **Output:** `&i32` - A reference to the head node's data.
 
-Removes the first node of the list.
+### `LinkedList::insert_at(index: usize, data: i32)`
 
-### remove_tail(&mut self)
+Inserts a new node with the provided data at the specified index in the list.
 
-Removes the last node of the list.
+- **Input:**
+  - `index: usize` - The position where the new node should be inserted.
+  - `data: i32` - The data for the new node.
+- **Output:** None. Modifies the list in-place.
 
-### remove_value(&mut self, data: i32)
+### `LinkedList::insert_tail(data: i32)`
 
-Removes the first occurrence of a node with the specified data.
+Adds a new node with the specified data to the end of the list.
+
+- **Input:** `data: i32` - The data for the new node.
+- **Output:** None. Modifies the list in-place.
+
+### `LinkedList::remove_head()`
+
+Removes the first node of the list, effectively decreasing its size by one.
+
+- **Input:** None
+- **Output:** None. Modifies the list in-place.
+
+### `LinkedList::remove_tail()`
+
+Removes the last node of the list. This method iterates through the list to find the tail's predecessor.
+
+- **Input:** None
+- **Output:** None. Modifies the list in-place.
+
+### `LinkedList::remove_value(data: i32)`
+
+Searches for and removes the first node that contains the specified data.
+
+- **Input:** `data: i32` - The data of the node to remove.
+- **Output:** None. Modifies the list in-place if a matching node is found.
 
 ## Example Usage
 
 ```rust
 let mut list = LinkedList::new();
 list.insert_head(1);
-list.insert_tail(2);
-list.insert_at(1, 3); // List: 1 -> 3 -> 2
+list.insert_tail(3);
+list.insert_at(1, 2); // List: 1 -> 2 -> 3
 
-list.display(); // Output: 1 3 2
-println!("Length: {}", list.get_length()); // Output: Length: 3
+list.display(); // Outputs: 1 2 3
+println!("Length: {}", list.get_length()); // Outputs: Length: 3
 
-list.remove_head(); // Removes the head, list: 3 -> 2
-list.remove_value(2); // Removes the node with data 2, list: 3
+list.remove_head(); // List: 2 -> 3
+list.remove_value(2); // List: 3
 list.remove_tail(); // The list is now empty
 
