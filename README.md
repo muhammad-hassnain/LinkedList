@@ -106,10 +106,12 @@ Searches for and removes the first node that contains the specified data.
 
 ## Example Usage
 
-- You have to add LinkedList to your Cargo.toml as 
-'''rust
-LinkedList = {git = "https://github.com/muhammad-hassnain/LinkedList.git"}
+Add the following line to your Cargo.toml. 
 
+```
+LinkedList = {git = "https://github.com/muhammad-hassnain/LinkedList.git"}
+```
+This is a basic usage of the library. For furthur details refer to the documentation. 
 
 ```rust
 
@@ -126,4 +128,4 @@ println!("Length: {}", list.get_length()); // Outputs: Length: 3
 list.remove_head(); // List: 2 -> 3
 list.remove_value(2); // List: 3
 list.remove_tail(); // The list is now empty
-
+```
