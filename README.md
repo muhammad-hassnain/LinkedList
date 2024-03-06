@@ -1,3 +1,7 @@
+## Important Note
+This is for experimental purposes only. If you are not a studty participant, you should not be used it under any circumstances.
+
+
 # LinkedList Implementation in Rust
 
 This repository contains an implementation of a singly linked list in Rust. The linked list supports fundamental operations such as insertion, deletion, and traversal, offering a practical example of Rust's ownership and type safety features.
