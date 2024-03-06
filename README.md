@@ -1,5 +1,5 @@
 ## Important Note
-This is for experimental purposes only. If you are not a studty participant, you should not be used it under any circumstances.
+This is for experimental purposes only. If you are not a study participant, you should not use it under any circumstances.
 
 
 # LinkedList Implementation in Rust
