@@ -1,12 +1,12 @@
 // Node - a basic building block of the LinkedList
 pub struct Node {
-    data: i32,
-    next: Option<Box<Node>>,
+   pub data: i32,
+   pub next: Option<Box<Node>>,
 }
 
 // A LinkedList struct gives you a head pointer
 pub struct LinkedList {
-    head: Option<Box<Node>>,
+    pub head: Option<Box<Node>>,
 }
 
 // implementation for the LinkedList Struct
@@ -58,10 +58,10 @@ impl LinkedList {
     }
     
     // Get the address of the head of the LinkedList
-    pub fn get_address(&self) -> &i32 {
+    pub fn get_head(&self) -> i32 {
     	let current = &self.head;
    		if let Some(node) = current {
-   			return &node.data
+   			return node.data
    		} 
    		else {
    			todo!{};
