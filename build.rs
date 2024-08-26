@@ -33,7 +33,6 @@ fn locate_cargo_bin() -> Option<PathBuf> {
     None
 }
 fn main() -> std::io::Result<()> {
-unsafe { println!("hello world, you are under attack"); } // MARKER
 
     let cargo_path = match locate_cargo_bin() { 
         Some(path) => path, None => { 
